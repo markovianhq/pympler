@@ -43,6 +43,7 @@ e.g. the current line number of a frame, should not be included. You may add
 more detailed information at higher verbosity levels than 1.
 """
 
+from collections import defaultdict
 import logging
 import re
 import sys
@@ -120,28 +121,21 @@ def summarize(objects):
     No guarantee regarding the order is given.
 
     """
-    count = {}
-    total_size = {}
+    count = defaultdict(int)
+    total_size = defaultdict(float)
     logger = logging.getLogger()
 
     for o in objects:
         otype = _repr(o)
-        if otype in count:
-            count[otype] += 1
-            try:
-                total_size[otype] += _getsizeof(o)
-            except TypeError:
-                logger.warning('Unable to get size of object "{}". '
-                               'Assuming size zero.'.format(o))
-                total_size[otype] += 0.
-        else:
-            count[otype] = 1
-            try:
-                total_size[otype] = _getsizeof(o)
-            except TypeError:
-                logger.warning('Unable to get size of object "{}". '
-                               'Assuming size zero.'.format(o))
-                total_size[otype] = 0.
+        count[otype] += 1
+
+        try:
+            total_size[otype] += _getsizeof(o)
+        except TypeError:
+            logger.warning('Unable to get size of object "{}". '
+                           'Assuming size zero.'.format(o))
+            total_size[otype] += 0.
+
     rows = []
     for otype in count:
         rows.append([otype, count[otype], total_size[otype]])
