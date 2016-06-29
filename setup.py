@@ -24,7 +24,12 @@ if sys.hexversion < 0x2050000:
 import os
 from distutils.command.install_lib import install_lib
 from distutils.core import Command
-from distutils.core import setup
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
 from distutils.dist import Distribution
 from distutils.errors import DistutilsExecError
 from distutils.spawn import spawn  # raises DistutilsExecError
